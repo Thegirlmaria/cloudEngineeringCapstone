@@ -1,0 +1,13 @@
+# SSH keys
+*.pem
+*.key
+
+# Environment variables
+.env
+
+# AWS credentials
+.aws/
+
+# OS files
+.DS_Store
+Thumbs.db
