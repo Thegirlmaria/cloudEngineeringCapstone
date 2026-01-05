@@ -31,6 +31,8 @@ The goal is to showcase **cloud infrastructure, Linux administration, and web ho
 
 ## Architecture Overview
 
+![Architecture](diagram/lamp-server.png)
+
 - **VPC:** Custom CIDR 10.0.0.0/16
 - **Public Subnets:** 2 (for internet-facing resources)
 - **Private Subnets:** 2 (for backend/future expansion)
@@ -39,19 +41,17 @@ The goal is to showcase **cloud infrastructure, Linux administration, and web ho
 - **EC2 Instance:** Amazon Linux, t3.micro, deployed in public subnet
 - **Security Groups:** Least-privilege inbound/outbound rules
 
-![Architecture](screenshots/lamp-server.png)
-
 ---
 
 ## Security Configuration
+
+[![Security Group Rules](screenshots/security-group.png)
 
 - **Inbound Rules:**
   - SSH (22) → My IP only
   - HTTP (80) → 0.0.0.0/0
   - HTTPS (443) → 0.0.0.0/0
 - **Outbound Rules:** All traffic allowed
-
-[![Security Group Rules](screenshots/security-group.png)
 
 ---
 
@@ -69,58 +69,21 @@ ssh -i <key-pair-name>.pem ec2-user@<ec2-public-ip>
 
 ---
 
-## LAMP Stack Installation
+## Application Deployment & Validation
 
-```bash
-# Update System Packages
-sudo yum update -y
+To validate the LAMP stack, a PHP test file was deployed to the Apache web root.
 
-# Install LAMP Server
+### PHP Test File
 
-sudo dnf install -y httpd wget php-fpm php-mysqli php-json php php-devel
+[![PHP](screenshots/php.info.png)
 
-#Install MySQL (MariaDB)
+`phpinfo();`
 
-sudo dnf install mariadb105-server -y
+## Browser Verification
 
-# Permissions
+The application was verified by accessing the PHP info page via a web browser:
 
-## Added ec2-user to Apache group.
-
-sudo chmod -a -G apache ec2-User
-
-## Logged out and in to verify group membership
-
-exit
-
-ssh -i <key-pair-name>.pem ec2-user@<ec2-public-ip>
-
-groups
-
-## Changed ownership of /var/www and its content from ec2-user to Apache.
-
-sudo chown -R ec2-user:apache /var/www
-
-## Added group write permission
-
-sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;
-
-find /var/www -type f -exec sudo chmod 0664 {} \;
-
-# Application Deployment
-
-![PHP Deployment](screenshot/php.info.png)
-
-## PHP Test File
-echo "<?php phpinfo(); ?>" > /var/www/html/phpinfo.php
-
-## Verify LAMP server is accessible in a browser using
-
-http://my.public.dns.amazonaws.com/phpinfo.php
-
-```
-
-[![Security Group Rules](screenshots/php.info.png)
+`http://<EC2-PUBLIC-DNS>/phpinfo.php`
 
 ## Testing and Validation
 
